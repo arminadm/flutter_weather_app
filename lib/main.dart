@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -18,6 +17,8 @@ class IndexWeatherPage extends StatefulWidget {
 }
 
 class _IndexWeatherPageState extends State<IndexWeatherPage> {
+  TextEditingController  textEditingController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,10 +31,34 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
           )
         ),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
           child: Center(
             child: Column(
               children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          onPressed: (){
+                      
+                          }, 
+                          child: const Text('Find', style: TextStyle(fontSize: 15),),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 8.0, right: 12),
+                          child: TextField(
+                            controller: textEditingController,
+                            decoration: const InputDecoration(
+                              border: UnderlineInputBorder(),
+                              hintText: 'Enter city name'
+                            ),
+                          ),
+                        ))
+                    ],
+                  ),
                 const Padding(
                   padding: EdgeInsets.only(top: 45),
                   child: Text('Mountain View', style: TextStyle(
@@ -102,6 +127,7 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                             height: 50,
                             width: 50,
                             child: Card(
+                              elevation: 0,
                               color: Colors.transparent,
                               child: Column(children: const [
                                 Text('Fri, 8pm', style: TextStyle(fontSize: 10, color: Colors.white)),
