@@ -1,1 +1,3 @@
-# flutter_weather_app
+# flutter weather app
+
+My first flutter project
