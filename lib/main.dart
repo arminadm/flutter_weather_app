@@ -22,7 +22,20 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('weather app'),
+        backgroundColor: Color.fromARGB(255, 38, 38, 38),
+        actions: <Widget>[
+          PopupMenuButton<String> (itemBuilder: (BuildContext context){
+            return {"setting", "logout", "profile"}.map((String choice) {
+              return PopupMenuItem(
+                value: choice,
+                child: Text(choice)
+              );
+            }).toList();
+          })
+        ],
+      ),
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -31,7 +44,7 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
           )
         ),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: Center(
             child: Column(
               children: [
@@ -40,6 +53,9 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 42, 42, 42)
+                          ),
                           onPressed: (){
                       
                           }, 
@@ -53,7 +69,7 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                             controller: textEditingController,
                             decoration: const InputDecoration(
                               border: UnderlineInputBorder(),
-                              hintText: 'Enter city name'
+                              hintText: 'Enter a city name'
                             ),
                           ),
                         ))
