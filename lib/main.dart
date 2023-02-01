@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_course_b/Model/CurrentDayWeather.dart';
+import 'package:intl/intl.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 
 void main() {
@@ -28,7 +29,7 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
   void initState() {
     // Call OpenWeather API
     super.initState();
-    FuCurrentDayWeather = get_current_weather();
+    FuCurrentDayWeather = get_current_weather('tehran');
   }
 
   @override
@@ -52,6 +53,8 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
         future: FuCurrentDayWeather,
         builder: (context, snapshot) {
           if(snapshot.hasData){
+            CurrentDayWeather? CurrentWeatherData = snapshot.data;
+
             return Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -73,7 +76,9 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                                   backgroundColor: const Color.fromARGB(255, 42, 42, 42)
                                 ),
                                 onPressed: (){
-                            
+                                  setState(() {
+                                    FuCurrentDayWeather = get_current_weather(textEditingController.text);
+                                  });
                                 }, 
                                 child: const Text('Find', style: TextStyle(fontSize: 15),),
                               ),
@@ -91,15 +96,15 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                               ))
                           ],
                         ),
-                      const Padding(
-                        padding: EdgeInsets.only(top: 45),
-                        child: Text('Mountain View', style: TextStyle(
+                      Padding(
+                        padding: const EdgeInsets.only(top: 45),
+                        child: Text(CurrentWeatherData!.city_name, style: const TextStyle(
                           color: Colors.white, fontSize: 35
                         )),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(top: 15),
-                        child: Text('Clear Sky', style: TextStyle(
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15),
+                        child: Text(CurrentWeatherData.description, style: const TextStyle(
                           color: Colors.white, fontSize: 20
                         )),
                       ),
@@ -107,9 +112,9 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                         padding: EdgeInsets.only(top: 35),
                         child: Icon(Icons.wb_sunny_outlined, color: Colors.white, size: 65,)
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(top: 15),
-                        child: Text("14" "\u00B0", style: TextStyle(
+                      Padding(
+                        padding: const EdgeInsets.only(top: 15),
+                        child: Text(CurrentWeatherData.temp.toString() + "\u00B0", style: const TextStyle(
                           color: Colors.white, fontSize: 30
                         )),
                       ),
@@ -119,9 +124,10 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Column(
-                              children: const [
-                                Text('max', style: TextStyle(color: Colors.white, fontSize: 10),),
-                                Text('16' '\u00B0', style: TextStyle(color: Colors.white, fontSize: 10),),
+                              children: [
+                                const Text('max', style: TextStyle(color: Colors.white, fontSize: 10),),
+                                Text(CurrentWeatherData.temp_max.toString() + '\u00B0',
+                                style: const TextStyle(color: Colors.white, fontSize: 10),),
                               ],
                             ),
                             Padding(
@@ -135,9 +141,10 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                             Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Column(
-                                children: const [
-                                  Text('min', style: TextStyle(color: Colors.white, fontSize: 10),),
-                                  Text('12' '\u00B0', style: TextStyle(color: Colors.white, fontSize: 10),),
+                                children: [
+                                  const Text('min', style: TextStyle(color: Colors.white, fontSize: 10),),
+                                  Text(CurrentWeatherData.temp_min.toString() + '\u00B0', 
+                                  style: const TextStyle(color: Colors.white, fontSize: 10),),
                                 ],
                               ),
                             ),
@@ -180,11 +187,12 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                          Column(children: const [
-                            Text('wind speed', style: TextStyle(fontSize: 10, color: Colors.grey)),
-                            Padding(
-                              padding: EdgeInsets.only(top: 8.0),
-                              child: Text('4.73 m/s', style: TextStyle(fontSize: 10, color: Colors.white)),
+                          Column(children: [
+                              const Text('wind speed', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Text(CurrentWeatherData.wind_speed.toString() + ' m/s', 
+                                style: const TextStyle(fontSize: 10, color: Colors.white)),
                               ),
                             ]),
               
@@ -197,11 +205,12 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                             ),
                           ),
               
-                          Column(children: const [
-                            Text('sunrise', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                          Column(children: [
+                            const Text('sunrise', style: TextStyle(fontSize: 10, color: Colors.grey)),
                             Padding(
-                              padding: EdgeInsets.only(top: 8.0),
-                              child: Text('6:19 PM', style: TextStyle(fontSize: 10, color: Colors.white)),
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(CurrentWeatherData.sunrise.toString(), 
+                              style: const TextStyle(fontSize: 10, color: Colors.white)),
                               ),
                             ]),
               
@@ -214,11 +223,12 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                             ),
                           ),
               
-                          Column(children: const [
-                            Text('sunset', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                          Column(children: [
+                            const Text('sunset', style: TextStyle(fontSize: 10, color: Colors.grey)),
                             Padding(
-                              padding: EdgeInsets.only(top: 8.0),
-                              child: Text('9:30 AM', style: TextStyle(fontSize: 10, color: Colors.white)),
+                              padding: const EdgeInsets.only(top: 8.0),
+                                child: Text(CurrentWeatherData.sunset.toString(), 
+                                style: const TextStyle(fontSize: 10, color: Colors.white)),
                               ),
                             ]),
               
@@ -231,11 +241,12 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                             ),
                           ),
               
-                          Column(children: const [
-                            Text('humidity', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                          Column(children: [
+                            const Text('humidity', style: TextStyle(fontSize: 10, color: Colors.grey)),
                             Padding(
-                              padding: EdgeInsets.only(top: 8.0),
-                              child: Text('72%', style: TextStyle(fontSize: 10, color: Colors.white)),
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(CurrentWeatherData.humidity.toString() + '%', 
+                              style: const TextStyle(fontSize: 10, color: Colors.white)),
                               ),
                             ])
                         ]),
@@ -261,9 +272,8 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
     );
   }
 
-  Future<CurrentDayWeather> get_current_weather() async {
+  Future<CurrentDayWeather> get_current_weather(city_name) async {
     var api_key = "522461028f3976c593ad2b47985ec2a3";
-    var city_name = "tehran";
 
     // getting lat and lon of the selected city
     var lat_lon_response = await Dio().get(
@@ -283,10 +293,15 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
       queryParameters: {
         "lat": lat,
         "lon": lon,
+        "units": "metric",
         "appid": api_key
       },
     );
 
+
+    var sunrise = Convert_milisecs_to_std_time(current_weather.data['sys']['sunrise']);
+    var sunset = Convert_milisecs_to_std_time(current_weather.data['sys']['sunset']);
+    
     // creating current weather data model so later
     // we can use it in UI
     var CurrentWeatherDataModel = CurrentDayWeather(
@@ -298,11 +313,19 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
       current_weather.data['main']['temp_min'],
       current_weather.data['main']['temp_max'],
       current_weather.data['wind']['speed'],
-      current_weather.data['sys']['sunrise'],
-      current_weather.data['sys']['sunset'],
+      sunrise,
+      sunset,
       current_weather.data['main']['humidity'],
+      city_name,
     );
 
     return CurrentWeatherDataModel;
+  }
+
+  String Convert_milisecs_to_std_time(time) {
+    var millis = time * 1000;
+    var dt = DateTime.fromMillisecondsSinceEpoch(millis);
+    var time24 = DateFormat('HH:mm').format(dt);
+    return time24.toString();
   }
 }

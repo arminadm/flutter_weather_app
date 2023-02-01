@@ -10,6 +10,7 @@ class CurrentDayWeather {
   var _sunrise;
   var _sunset;
   var _humidity;
+  String _city_name;
 
   CurrentDayWeather(
     this._lat,
@@ -23,6 +24,7 @@ class CurrentDayWeather {
     this._sunrise,
     this._sunset,
     this._humidity,
+    this._city_name,
   );
 
   get lat => _lat;
@@ -36,5 +38,6 @@ class CurrentDayWeather {
   get sunrise => _sunrise;
   get sunset => _sunset;
   get humidity => _humidity;
+  get city_name => _city_name;
 }
 
