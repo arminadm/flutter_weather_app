@@ -1,5 +1,7 @@
 import 'dart:ui';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_course_b/Model/CurrentDayWeather.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -18,6 +20,14 @@ class IndexWeatherPage extends StatefulWidget {
 
 class _IndexWeatherPageState extends State<IndexWeatherPage> {
   TextEditingController  textEditingController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    get_current_weather();
+    print("############################################helloooooo");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -232,5 +242,46 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
     );
   }
 
-  
+  void get_current_weather() async {
+    var api_key = "522461028f3976c593ad2b47985ec2a3";
+    var city_name = "tehran";
+
+    // getting lat and lon of the selected city
+    var lat_lon_response = await Dio().get(
+      "http://api.openweathermap.org/geo/1.0/direct",
+      queryParameters: {
+        "q": city_name,
+        "limit": 1,
+        "appid": api_key
+      },
+    );
+    var lat = lat_lon_response.data[0]['lat'].toString();
+    var lon = lat_lon_response.data[0]['lon'].toString();
+
+    // getting current weather of this lat and lon
+    var current_weather = await Dio().get(
+      "https://api.openweathermap.org/data/2.5/weather",
+      queryParameters: {
+        "lat": lat,
+        "lon": lon,
+        "appid": api_key
+      },
+    );
+
+    // creating current weather data model so later
+    // we can use it in UI
+    var CurrentWeatherDataModel = CurrentDayWeather(
+      lat,
+      lon,
+      current_weather.data['weather'][0]['main'],
+      current_weather.data['weather'][0]['description'],
+      current_weather.data['main']['temp'],
+      current_weather.data['main']['temp_min'],
+      current_weather.data['main']['temp_max'],
+      current_weather.data['wind']['speed'],
+      current_weather.data['sys']['sunrise'],
+      current_weather.data['sys']['sunset'],
+      current_weather.data['main']['humidity'],
+    );
+  }
 }
