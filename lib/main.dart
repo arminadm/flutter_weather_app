@@ -108,9 +108,11 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                           color: Colors.white, fontSize: 20
                         )),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(top: 35),
-                        child: Icon(Icons.wb_sunny_outlined, color: Colors.white, size: 65,)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 35),
+                        child: Image.network(
+                          get_icon_url(CurrentWeatherData.icon),
+                          scale: 0.6,),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 15),
@@ -298,10 +300,10 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
       },
     );
 
-
+    // generate required data
     var sunrise = Convert_milisecs_to_std_time(current_weather.data['sys']['sunrise']);
     var sunset = Convert_milisecs_to_std_time(current_weather.data['sys']['sunset']);
-    
+
     // creating current weather data model so later
     // we can use it in UI
     var CurrentWeatherDataModel = CurrentDayWeather(
@@ -317,6 +319,7 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
       sunset,
       current_weather.data['main']['humidity'],
       city_name,
+      current_weather.data['weather'][0]['icon'],
     );
 
     return CurrentWeatherDataModel;
@@ -328,4 +331,10 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
     var time24 = DateFormat('HH:mm').format(dt);
     return time24.toString();
   }
+
+  String get_icon_url(img_code) {
+    String url = "http://openweathermap.org/img/w/${img_code}.png";
+    return url;
+  }
+
 }
