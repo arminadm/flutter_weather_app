@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_course_b/Model/CurrentDayWeather.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -19,14 +20,15 @@ class IndexWeatherPage extends StatefulWidget {
 }
 
 class _IndexWeatherPageState extends State<IndexWeatherPage> {
+  // initializing variables
   TextEditingController  textEditingController = TextEditingController();
+  late Future<CurrentDayWeather> FuCurrentDayWeather;
 
   @override
   void initState() {
-    // TODO: implement initState
+    // Call OpenWeather API
     super.initState();
-    get_current_weather();
-    print("############################################helloooooo");
+    FuCurrentDayWeather = get_current_weather();
   }
 
   @override
@@ -46,203 +48,220 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
           })
         ],
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('images/index_bg.jpg'),
-            fit: BoxFit.cover
-          )
-        ),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Center(
-            child: Column(
-              children: [
-                  Row(
+      body:FutureBuilder(
+        future: FuCurrentDayWeather,
+        builder: (context, snapshot) {
+          if(snapshot.hasData){
+            return Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('images/index_bg.jpg'),
+                  fit: BoxFit.cover
+                )
+              ),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Center(
+                  child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 42, 42, 42)
-                          ),
-                          onPressed: (){
-                      
-                          }, 
-                          child: const Text('Find', style: TextStyle(fontSize: 15),),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 8.0, right: 12),
-                          child: TextField(
-                            controller: textEditingController,
-                            decoration: const InputDecoration(
-                              border: UnderlineInputBorder(),
-                              hintText: 'Enter a city name'
+                        Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color.fromARGB(255, 42, 42, 42)
+                                ),
+                                onPressed: (){
+                            
+                                }, 
+                                child: const Text('Find', style: TextStyle(fontSize: 15),),
+                              ),
                             ),
-                          ),
-                        ))
-                    ],
-                  ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 45),
-                  child: Text('Mountain View', style: TextStyle(
-                    color: Colors.white, fontSize: 35
-                  )),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 15),
-                  child: Text('Clear Sky', style: TextStyle(
-                    color: Colors.white, fontSize: 20
-                  )),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 35),
-                  child: Icon(Icons.wb_sunny_outlined, color: Colors.white, size: 65,)
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 15),
-                  child: Text("14" "\u00B0", style: TextStyle(
-                    color: Colors.white, fontSize: 30
-                  )),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Column(
-                        children: const [
-                          Text('max', style: TextStyle(color: Colors.white, fontSize: 10),),
-                          Text('16' '\u00B0', style: TextStyle(color: Colors.white, fontSize: 10),),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Container(
-                          height: 20,
-                          width: 1,
-                          color: Colors.grey,
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8.0, right: 12),
+                                child: TextField(
+                                  controller: textEditingController,
+                                  decoration: const InputDecoration(
+                                    border: UnderlineInputBorder(),
+                                    hintText: 'Enter a city name'
+                                  ),
+                                ),
+                              ))
+                          ],
                         ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 45),
+                        child: Text('Mountain View', style: TextStyle(
+                          color: Colors.white, fontSize: 35
+                        )),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 15),
+                        child: Text('Clear Sky', style: TextStyle(
+                          color: Colors.white, fontSize: 20
+                        )),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 35),
+                        child: Icon(Icons.wb_sunny_outlined, color: Colors.white, size: 65,)
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 15),
+                        child: Text("14" "\u00B0", style: TextStyle(
+                          color: Colors.white, fontSize: 30
+                        )),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Column(
-                          children: const [
-                            Text('min', style: TextStyle(color: Colors.white, fontSize: 10),),
-                            Text('12' '\u00B0', style: TextStyle(color: Colors.white, fontSize: 10),),
+                        padding: const EdgeInsets.only(top: 5),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Column(
+                              children: const [
+                                Text('max', style: TextStyle(color: Colors.white, fontSize: 10),),
+                                Text('16' '\u00B0', style: TextStyle(color: Colors.white, fontSize: 10),),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Container(
+                                height: 20,
+                                width: 1,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Column(
+                                children: const [
+                                  Text('min', style: TextStyle(color: Colors.white, fontSize: 10),),
+                                  Text('12' '\u00B0', style: TextStyle(color: Colors.white, fontSize: 10),),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: Container(
-                    width: double.infinity,
-                    height: 80,
-                    child: Center(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 6,
-                        itemBuilder: (BuildContext context, int pos) {
-                          return Container(
-                            height: 50,
-                            width: 50,
-                            child: Card(
-                              elevation: 0,
-                              color: Colors.transparent,
-                              child: Column(children: const [
-                                Text('Fri, 8pm', style: TextStyle(fontSize: 10, color: Colors.white)),
-                                Icon(Icons.cloud, color: Colors.white),
-                                Text('14' '\u00B0', style: TextStyle(fontSize: 15, color: Colors.white)),
-                              ]),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Container(
+                          width: double.infinity,
+                          height: 80,
+                          child: Center(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: 6,
+                              itemBuilder: (BuildContext context, int pos) {
+                                return Container(
+                                  height: 50,
+                                  width: 50,
+                                  child: Card(
+                                    elevation: 0,
+                                    color: Colors.transparent,
+                                    child: Column(children: const [
+                                      Text('Fri, 8pm', style: TextStyle(fontSize: 10, color: Colors.white)),
+                                      Icon(Icons.cloud, color: Colors.white),
+                                      Text('14' '\u00B0', style: TextStyle(fontSize: 15, color: Colors.white)),
+                                    ]),
+                                  ),
+                                );
+                              }
                             ),
-                          );
-                        }
+                          ),
+                        ),
                       ),
-                    ),
+                      Container(
+                        width: double.infinity,
+                        height: 35,
+                        color: Colors.transparent,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                          Column(children: const [
+                            Text('wind speed', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                            Padding(
+                              padding: EdgeInsets.only(top: 8.0),
+                              child: Text('4.73 m/s', style: TextStyle(fontSize: 10, color: Colors.white)),
+                              ),
+                            ]),
+              
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8, right: 8),
+                            child: Container(
+                              height: 38,
+                              width: 1,
+                              color: Colors.white,
+                            ),
+                          ),
+              
+                          Column(children: const [
+                            Text('sunrise', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                            Padding(
+                              padding: EdgeInsets.only(top: 8.0),
+                              child: Text('6:19 PM', style: TextStyle(fontSize: 10, color: Colors.white)),
+                              ),
+                            ]),
+              
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8, right: 8),
+                            child: Container(
+                              height: 38,
+                              width: 1,
+                              color: Colors.white,
+                            ),
+                          ),
+              
+                          Column(children: const [
+                            Text('sunset', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                            Padding(
+                              padding: EdgeInsets.only(top: 8.0),
+                              child: Text('9:30 AM', style: TextStyle(fontSize: 10, color: Colors.white)),
+                              ),
+                            ]),
+              
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8, right: 8),
+                            child: Container(
+                              height: 38,
+                              width: 1,
+                              color: Colors.white,
+                            ),
+                          ),
+              
+                          Column(children: const [
+                            Text('humidity', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                            Padding(
+                              padding: EdgeInsets.only(top: 8.0),
+                              child: Text('72%', style: TextStyle(fontSize: 10, color: Colors.white)),
+                              ),
+                            ])
+                        ]),
+                      )
+                    ]
                   ),
                 ),
-                Container(
-                  width: double.infinity,
-                  height: 35,
-                  color: Colors.transparent,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                    Column(children: const [
-                      Text('wind speed', style: TextStyle(fontSize: 10, color: Colors.grey)),
-                      Padding(
-                        padding: EdgeInsets.only(top: 8.0),
-                        child: Text('4.73 m/s', style: TextStyle(fontSize: 10, color: Colors.white)),
-                        ),
-                      ]),
-        
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8, right: 8),
-                      child: Container(
-                        height: 38,
-                        width: 1,
-                        color: Colors.white,
-                      ),
-                    ),
-        
-                    Column(children: const [
-                      Text('sunrise', style: TextStyle(fontSize: 10, color: Colors.grey)),
-                      Padding(
-                        padding: EdgeInsets.only(top: 8.0),
-                        child: Text('6:19 PM', style: TextStyle(fontSize: 10, color: Colors.white)),
-                        ),
-                      ]),
-        
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8, right: 8),
-                      child: Container(
-                        height: 38,
-                        width: 1,
-                        color: Colors.white,
-                      ),
-                    ),
-        
-                    Column(children: const [
-                      Text('sunset', style: TextStyle(fontSize: 10, color: Colors.grey)),
-                      Padding(
-                        padding: EdgeInsets.only(top: 8.0),
-                        child: Text('9:30 AM', style: TextStyle(fontSize: 10, color: Colors.white)),
-                        ),
-                      ]),
-        
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8, right: 8),
-                      child: Container(
-                        height: 38,
-                        width: 1,
-                        color: Colors.white,
-                      ),
-                    ),
-        
-                    Column(children: const [
-                      Text('humidity', style: TextStyle(fontSize: 10, color: Colors.grey)),
-                      Padding(
-                        padding: EdgeInsets.only(top: 8.0),
-                        child: Text('72%', style: TextStyle(fontSize: 10, color: Colors.white)),
-                        ),
-                      ])
-                  ]),
-                )
-              ]
-            ),
-          ),
-        ), 
-      ),
+              ), 
+            );
+          }
+          else{
+            return Center(
+              child: JumpingDotsProgressIndicator(
+                color: Colors.black,
+                dotSpacing: 3,
+                fontSize: 80,
+              ),
+            );
+          }
+        },
+      ) 
+      
     );
   }
 
-  void get_current_weather() async {
+  Future<CurrentDayWeather> get_current_weather() async {
     var api_key = "522461028f3976c593ad2b47985ec2a3";
     var city_name = "tehran";
 
@@ -283,5 +302,7 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
       current_weather.data['sys']['sunset'],
       current_weather.data['main']['humidity'],
     );
+
+    return CurrentWeatherDataModel;
   }
 }
