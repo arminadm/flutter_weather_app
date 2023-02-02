@@ -3,6 +3,7 @@ import 'dart:ui';
 class CurrentDayWeather {
   var _lat;
   var _lon;
+  var _dt;
   String _main;
   String _description;
   var _temp;
@@ -18,6 +19,7 @@ class CurrentDayWeather {
   CurrentDayWeather(
     this._lat,
     this._lon,
+    this._dt,
     this._main,
     this._description,
     this._temp,
@@ -33,6 +35,7 @@ class CurrentDayWeather {
 
   get lat => _lat;
   get lon => _lon;
+  get dt => _dt;
   get main => _main;
   get description => _description;
   get temp => _temp;

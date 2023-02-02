@@ -1,7 +1,10 @@
+import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_course_b/Model/CurrentDayWeather.dart';
+import 'package:flutter_course_b/Model/SevenDaysForecast.dart';
 import 'package:intl/intl.dart';
 import 'package:progress_indicators/progress_indicators.dart';
 
@@ -24,23 +27,26 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
   // initializing variables
   TextEditingController  textEditingController = TextEditingController();
   late Future<CurrentDayWeather> FuCurrentDayWeather;
+  late StreamController<List<SevenDaysForecast>> six_days_forecast;
 
   @override
   void initState() {
     // Call OpenWeather API
     super.initState();
     FuCurrentDayWeather = get_current_weather('tehran');
+    six_days_forecast = StreamController<List<SevenDaysForecast>>();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset : false,
       appBar: AppBar(
         title: const Text('weather app'),
-        backgroundColor: Color.fromARGB(255, 38, 38, 38),
+        backgroundColor: Color.fromARGB(255, 2, 119, 143),
         actions: <Widget>[
           PopupMenuButton<String> (itemBuilder: (BuildContext context){
-            return {"setting", "logout", "profile"}.map((String choice) {
+            return {"this is", "just for", "testing"}.map((String choice) {
               return PopupMenuItem(
                 value: choice,
                 child: Text(choice)
@@ -54,7 +60,7 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
         builder: (context, snapshot) {
           if(snapshot.hasData){
             CurrentDayWeather? CurrentWeatherData = snapshot.data;
-
+            six_days_forecast.add(get_six_days_forecast(CurrentWeatherData!.dt));
             return Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -73,7 +79,7 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                               padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color.fromARGB(255, 42, 42, 42)
+                                  backgroundColor: Color.fromARGB(255, 3, 127, 157)
                                 ),
                                 onPressed: (){
                                   setState(() {
@@ -89,9 +95,16 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                                 child: TextField(
                                   controller: textEditingController,
                                   decoration: const InputDecoration(
-                                    border: UnderlineInputBorder(),
-                                    hintText: 'Enter a city name'
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(color: Color.fromARGB(255, 3, 127, 157))
+                                    ),
+                                    focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(color: Color.fromARGB(255, 3, 127, 157))
+                                    ),
+                                    hintText: 'Enter a city name',
+                                    hintStyle: TextStyle(color: Colors.white)
                                   ),
+                                  style: TextStyle(color: Colors.white),
                                 ),
                               ))
                           ],
@@ -159,25 +172,42 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
                           width: double.infinity,
                           height: 80,
                           child: Center(
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              itemCount: 6,
-                              itemBuilder: (BuildContext context, int pos) {
-                                return Container(
-                                  height: 50,
-                                  width: 50,
-                                  child: Card(
-                                    elevation: 0,
-                                    color: Colors.transparent,
-                                    child: Column(children: const [
-                                      Text('Fri, 8pm', style: TextStyle(fontSize: 10, color: Colors.white)),
-                                      Icon(Icons.cloud, color: Colors.white),
-                                      Text('14' '\u00B0', style: TextStyle(fontSize: 15, color: Colors.white)),
-                                    ]),
-                                  ),
-                                );
-                              }
+                            child: StreamBuilder<List<SevenDaysForecast>>(
+                              stream: six_days_forecast.stream,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData){
+                                  List<SevenDaysForecast>? forecast_list = snapshot.data;
+                                  return ListView.builder(
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: 6,
+                                  itemBuilder: (BuildContext context, int pos) {
+                                    return Container(
+                                      height: 50,
+                                      width: 50,
+                                      child: Card(
+                                        elevation: 0,
+                                        color: Colors.transparent,
+                                        child: Column(children: [
+                                          Text(forecast_list![pos].date.toString(), 
+                                          style: const TextStyle(fontSize: 10, color: Colors.white)),
+                                          Icon(generate_random_icon(forecast_list[pos].icon), color: Colors.white,),
+                                          Text(forecast_list[pos].temp.toString() + '\u00B0', 
+                                          style: const TextStyle(fontSize: 15, color: Colors.white)),
+                                        ]),
+                                      ),
+                                    );
+                                  }
+                                );}
+                                else {
+                                  return Center(
+                                    child: JumpingDotsProgressIndicator(
+                                      color: Colors.black,
+                                      dotSpacing: 3,
+                                      fontSize: 80,
+                                    ),
+                                  );}
+                                }
                             ),
                           ),
                         ),
@@ -309,6 +339,7 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
     var CurrentWeatherDataModel = CurrentDayWeather(
       lat,
       lon,
+      current_weather.data['dt'],
       current_weather.data['weather'][0]['main'],
       current_weather.data['weather'][0]['description'],
       current_weather.data['main']['temp'],
@@ -325,6 +356,28 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
     return CurrentWeatherDataModel;
   }
 
+  List<SevenDaysForecast> get_six_days_forecast(time){
+    // for saving days data
+    List<SevenDaysForecast> six_days_list  = [];
+    // this function was about to getting the weather
+    // data of the next 6 days, but open weather api
+    // doesn't serve these data as free service
+    // so we generate random data
+    for (int i = 0; i < 7; i++){
+      // we have to increase time by a day after each iteration
+      var millis = time * 1000;
+      var dt = DateTime.fromMillisecondsSinceEpoch(millis);
+      SevenDaysForecast model = SevenDaysForecast(
+        Random().nextInt(50) - 15,
+        Random().nextInt(5),
+        DateFormat.MMMd().format(DateTime(dt.year, dt.month, dt.day + i)).toString(),
+      );
+
+      six_days_list.add(model);
+    }
+    return six_days_list;
+  }
+
   String Convert_milisecs_to_std_time(time) {
     var millis = time * 1000;
     var dt = DateTime.fromMillisecondsSinceEpoch(millis);
@@ -335,6 +388,15 @@ class _IndexWeatherPageState extends State<IndexWeatherPage> {
   String get_icon_url(img_code) {
     String url = "http://openweathermap.org/img/w/${img_code}.png";
     return url;
+  }
+
+  IconData generate_random_icon(code) {
+    if (code == 0) return Icons.cloud;
+    else if (code == 1) return Icons.cloudy_snowing;
+    else if (code == 2) return Icons.sunny_snowing;
+    else if (code == 3) return Icons.sunny;
+    else if (code == 4) return Icons.storm;
+    else return Icons.error;
   }
 
 }
